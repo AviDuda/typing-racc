@@ -1,0 +1,8 @@
+# Configuration file for Mise (toolchain manager)
+#
+# Homepage: https://mise.jdx.dev/
+# Config file documentation: https://mise.jdx.dev/configuration/settings.html
+
+[tools]
+bun = "latest"
+"ubi:biomejs/biome" = "cli/v1.9.4"

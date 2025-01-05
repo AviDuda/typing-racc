@@ -1,0 +1,81 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"defaultBranch": "main"
+	},
+	"files": {
+		"ignore": ["dist", "node_modules"]
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"complexity": {
+				"noUselessFragments": "warn",
+				"noUselessRename": "warn",
+				"noUselessStringConcat": "warn",
+				"noUselessUndefinedInitialization": "warn",
+				"useArrowFunction": "warn",
+				"useDateNow": "warn",
+				"useLiteralKeys": "warn",
+				"useOptionalChain": "warn",
+				"useSimplifiedLogicExpression": "warn"
+			},
+			"correctness": {
+				"noConstantMathMinMaxClamp": "error",
+				"noUndeclaredDependencies": "error",
+				"noUndeclaredVariables": "error",
+				"noUnusedFunctionParameters": "warn",
+				"noUnusedImports": "error",
+				"noUnusedPrivateClassMembers": "error",
+				"noUnusedVariables": "error",
+				"useExhaustiveDependencies": "error",
+				"useHookAtTopLevel": "error"
+			},
+			"performance": {
+				"noDelete": "error",
+				"noBarrelFile": "error",
+				"noReExportAll": "error",
+				"useTopLevelRegex": "error"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "error",
+				"noAssignInExpressions": "error",
+				"noEmptyBlockStatements": "error",
+				"noEvolvingTypes": "error",
+				"noImplicitAnyLet": "error",
+				"noMisplacedAssertion": "error",
+				"noSkippedTests": "warn",
+				"useAwait": "error",
+				"useErrorMessage": "error",
+				"useNumberToFixedDigitsArgument": "error"
+			},
+			"style": {
+				"noImplicitBoolean": "warn",
+				"noNamespace": "error",
+				"noNamespaceImport": "error",
+				"noNegationElse": "error",
+				"noParameterAssign": "warn",
+				"noUnusedTemplateLiteral": "warn",
+				"noUselessElse": "warn",
+				"noYodaExpression": "error",
+				"useBlockStatements": "error",
+				"useCollapsedElseIf": "error",
+				"useConsistentBuiltinInstantiation": "error",
+				"useDefaultSwitchClause": "error",
+				"useExplicitLengthCheck": "error",
+				"useForOf": "error",
+				"useFragmentSyntax": "error",
+				"useNodeAssertStrict": "error",
+				"useSelfClosingElements": "warn",
+				"useShorthandAssign": "error",
+				"useSingleVarDeclarator": "warn",
+				"useTemplate": "warn",
+				"useThrowNewError": "error",
+				"useThrowOnlyError": "error"
+			}
+		}
+	}
+}

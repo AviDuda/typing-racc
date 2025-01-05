@@ -1,0 +1,12 @@
+{
+	"name": "typingmind-plugins",
+	"license": "MIT",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"build": "bun --bun ./build.ts"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.1.14"
+	}
+}
