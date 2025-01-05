@@ -8,6 +8,9 @@
 	"files": {
 		"ignore": ["dist", "node_modules"]
 	},
+	"formatter": {
+		"useEditorconfig": true
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
