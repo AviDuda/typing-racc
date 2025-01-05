@@ -38,6 +38,14 @@ for (const plugin of pluginNames) {
 	});
 }
 
+// Post-processing
+
+// Copy the GitHub Pages readme
+await write(
+	file(path.join(distDir, "README.md")),
+	file(path.join(path.resolve(__dirname, ".github"), "README_gh_pages.md")),
+);
+
 for (const plugin of pluginNames) {
 	console.log(`Processing plugin ${plugin}`);
 	const pluginDirs = getPluginDirs(plugin);
