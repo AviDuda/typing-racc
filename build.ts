@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { rmSync } from "node:fs";
-import { readdir } from "node:fs/promises";
+import { readdir, rename } from "node:fs/promises";
 import path from "node:path";
 import { build, file, write } from "bun";
 import type { GetAgent, TypingMindAgent } from "./src/types/typingmind-agent";
@@ -47,6 +47,12 @@ for (const plugin of pluginNames) {
 	let code = await codeFile.text();
 	code = code.replace(/export {.*?};/gs, "");
 	await write(`${pluginDirs.dist}/index.js`, code);
+
+	// Move to implementation.js
+	await rename(
+		`${pluginDirs.dist}/index.js`,
+		`${pluginDirs.dist}/implementation.js`,
+	);
 
 	// Copy README
 	const readmeFile = file(`${pluginDirs.src}/README.md`);
