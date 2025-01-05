@@ -12,7 +12,17 @@ A plugin to manage your tasks in TickTick using TypingMind.
 
 ## Development
 
+### Setup
+
 - Use [Bun](https://bun.sh/) as the JavaScript runtime/bundler.
 - Use [Biome](https://biomejs.dev/) for formatting and linting.
 
 You can install both via installing [mise](https://mise.jdx.dev/) and running `mise install`.
+
+### Build
+
+Run `bun run build` to build the plugins.
+
+## License
+
+MIT
