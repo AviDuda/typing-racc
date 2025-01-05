@@ -1,4 +1,4 @@
-# TypingMind plugins
+# typing-racc TypingMind plugins
 
 My collection of plugins for TypingMind.
 

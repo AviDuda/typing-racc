@@ -11,8 +11,8 @@ Add [TickTick](https://ticktick.com/) task manager functionality in [TypingMind]
 1. Import the plugin.
     1. Open TypingMind and go to the *Plugins* page.
     1. Click on the *Import plugins* button.
-    1. Paste the following URL: `https://github.com/AviDuda/typingmind-plugins/tree/gh-pages/ticktick`
-    1. Press *Continue*.
+    1. Paste the following URL: `https://github.com/AviDuda/typing-racc/tree/gh-pages/ticktick`
+    1. Press *Continue* and then *Import Plugin*.
 1. Create a new app on the [TickTick developer page](https://developer.ticktick.com/manage).
     1. Click on New App, add a name (e.g. TypingMind), and confirm with the Add button.
     1. On the edit page, set *OAuth redirect URL* to `http://localhost/oauth/callback` and save.
