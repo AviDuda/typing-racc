@@ -1,0 +1,225 @@
+{
+  "uuid": "05c27777-9d67-4035-9538-0648de9ce6a5",
+  "version": 1,
+  "title": "TickTick",
+  "emoji": "📝",
+  "iconURL": "https://d107mjio2rjf74.cloudfront.net/web/static/img/apple-touch-icon-152x152.png",
+  "overviewMarkdown": "# TickTick plugin for TypingMind\n\nAdd [TickTick](https://ticktick.com/) task manager functionality in [TypingMind](https://www.typingmind.com/).\n\n**IMPORTANT:** AI can and does hallucinate. It doesn't understand the structure well and may lie to you about the tasks (e.g. not including all even though they were returned in the response). Use the agent for better results.\n\n## Setup\n\n### Install the plugin\n\n1. Import the plugin.\n    1. Open TypingMind and go to the *Plugins* page.\n    1. Click on the *Import plugins* button.\n    1. Paste the following URL: `https://github.com/AviDuda/typing-racc/tree/gh-pages/ticktick`\n    1. Press *Continue* and then *Import Plugin*.\n1. Create a new app on the [TickTick developer page](https://developer.ticktick.com/manage).\n    1. Click on New App, add a name (e.g. TypingMind), and confirm with the Add button.\n    1. On the edit page, set *OAuth redirect URL* to `http://localhost/oauth/callback` and save.\n    1. Copy the *Client ID*.\n1. Get the access key.\n    1. Open the following URL in your browser: `https://ticktick.com/oauth/authorize?client_id=YOUR_CLIENT_ID&response_type=code&redirect_uri=http://localhost/oauth/callback`.  \n      Replace `YOUR_CLIENT_ID` with the client ID from the TickTick developer page.\n    1. Log in to your TickTick account and confirm the authorization.\n    1. The browser will redirect you to a (probably non-existing) page. Copy the code from the URL in the address bar (e.g. `http://localhost/oauth/callback?code=COPY_THIS_CODE`).\n1. Set the access key.\n    1. Go back to TypingMind and make sure you are on the *Plugins* page.\n    1. Click on the TickTick plugin and paste the code into the *Access key* field.\n    1. Click on the *Save* button.\n\nYou don't need to enable the plugin. It will be automatically enabled if you use the agent (highly recommended).\n\n### Install the agent\n\n1. Download the [agent JSON file](https://raw.githubusercontent.com/AviDuda/typing-racc/refs/heads/gh-pages/ticktick/agent.json).\n1. Import the agent.\n    1. Open TypingMind and go to the *Agents* page.\n    1. Click on the arrow next to the *Create AI Agent* button and select *Import from JSON*.\n    1. Select the downloaded file and press *Open*.\n\n## Usage\n\nIt is recommended to use the agent with the plugin. The agent can understand the tasks better, provide more accurate results, and act as a safeguard against AI hallucinations.\n\n1. Open TypingMind.\n2. Start a new conversation with the agent, or add the agent to an existing conversation via `@TickTick`.\n",
+  "implementationType": "javascript",
+  "outputType": "respond_to_ai",
+  "openaiSpec": {
+    "name": "ticktick_plugin",
+    "description": "TickTick plugin for TypingMind",
+    "parallel_tool_calls": false,
+    "parameters": {
+      "type": "object",
+      "required": [
+        "command"
+      ],
+      "properties": {
+        "command": {
+          "description": "The command to execute",
+          "type": "string",
+          "enum": [
+            "get_projects",
+            "get_project_by_id",
+            "get_project_tasks",
+            "update_task",
+            "create_task",
+            "complete_task",
+            "delete_task",
+            "create_project",
+            "update_project",
+            "delete_project"
+          ]
+        },
+        "projectId": {
+          "description": "TickTick project ID",
+          "type": "string"
+        },
+        "projectName": {
+          "description": "Alternative to projectId - can specify project by name",
+          "type": "string"
+        },
+        "taskId": {
+          "description": "TickTick task ID",
+          "type": "string"
+        },
+        "taskData": {
+          "description": "Task data for creating or updating tasks",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Task ID (required for updates, not allowed for creation)"
+            },
+            "projectId": {
+              "type": "string",
+              "description": "Project ID (required for new tasks, cannot be changed in updates)"
+            },
+            "title": {
+              "type": "string",
+              "description": "Task title"
+            },
+            "content": {
+              "type": "string",
+              "description": "Task content (mutually exclusive with items)"
+            },
+            "desc": {
+              "type": "string",
+              "description": "Task description"
+            },
+            "startDate": {
+              "type": "string",
+              "description": "Start date in yyyy-MM-dd'T'HH:mm:ssZ format"
+            },
+            "dueDate": {
+              "type": "string",
+              "description": "Due date in yyyy-MM-dd'T'HH:mm:ssZ format"
+            },
+            "timeZone": {
+              "type": "string",
+              "description": "Timezone (e.g. America/Los_Angeles)"
+            },
+            "isAllDay": {
+              "type": "boolean",
+              "description": "All day flag"
+            },
+            "priority": {
+              "type": "number",
+              "description": "Priority (0: None, 1: Low, 3: Medium, 5: High)",
+              "enum": [
+                0,
+                1,
+                3,
+                5
+              ]
+            },
+            "status": {
+              "type": "number",
+              "description": "Completion status (0: Normal, 2: Completed)"
+            },
+            "items": {
+              "type": "array",
+              "description": "List of subtasks (mutually exclusive with content)",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Subtask title"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "description": "Start date in yyyy-MM-dd'T'HH:mm:ssZ format"
+                  },
+                  "isAllDay": {
+                    "type": "boolean",
+                    "description": "All day flag"
+                  },
+                  "sortOrder": {
+                    "type": "number",
+                    "description": "Order of subtask"
+                  },
+                  "timeZone": {
+                    "type": "string",
+                    "description": "Timezone"
+                  },
+                  "status": {
+                    "type": "number",
+                    "description": "Completion status (0: Normal, 2: Completed)"
+                  },
+                  "completedTime": {
+                    "type": "string",
+                    "description": "Completion time in yyyy-MM-dd'T'HH:mm:ssZ format. Can appear even if status is not completed."
+                  }
+                }
+              }
+            },
+            "sortOrder": {
+              "type": "number",
+              "description": "The order of task"
+            },
+            "reminders": {
+              "type": "array",
+              "description": "Lists of reminders specific to the task",
+              "items": {
+                "type": "string"
+              }
+            },
+            "repeatFlag": {
+              "type": "string",
+              "description": "Recurring rules of task. Example: RRULE:FREQ=DAILY;INTERVAL=1"
+            }
+          }
+        },
+        "projectData": {
+          "description": "Project data for creating or updating projects",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Project ID (required for updates, not allowed for creation)"
+            },
+            "name": {
+              "type": "string",
+              "description": "Project name"
+            },
+            "color": {
+              "type": "string",
+              "description": "Project color"
+            },
+            "sortOrder": {
+              "type": "number",
+              "description": "Sort order value"
+            },
+            "viewMode": {
+              "type": "string",
+              "description": "View mode (list, kanban, timeline)",
+              "enum": [
+                "list",
+                "kanban",
+                "timeline"
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "description": "Project kind (TASK, NOTE)",
+              "enum": [
+                "TASK",
+                "NOTE"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "userSettings": [
+    {
+      "name": "accessKey",
+      "label": "TickTick API access key",
+      "description": "See the plugin documentation for instructions on how to obtain this key",
+      "type": "password",
+      "required": true
+    },
+    {
+      "name": "allowProjectModification",
+      "label": "Allow project modification",
+      "description": "Allow creating, updating, and deleting projects? Projects not included in the Allowed projects list won't be affected. Default is no.",
+      "type": "enum",
+      "values": [
+        "yes",
+        "no"
+      ]
+    },
+    {
+      "name": "allowedProjects",
+      "label": "Allowed projects",
+      "description": "Restrict all read/write operations to only these projects (comma-separated list of project IDs or names). Leave empty to allow all projects.",
+      "type": "text",
+      "required": false
+    }
+  ],
+  "code": "// src/utils/error.ts\nvar writeAccessDeniedResponse = {\n  success: false,\n  error: \"Write access denied to this project\",\n  canTryAnotherApproach: false\n};\nfunction isError(error) {\n  return error instanceof Error;\n}\nfunction getErrorMessage(error) {\n  if (isError(error)) {\n    return error.message;\n  }\n  if (typeof error === \"string\") {\n    return error;\n  }\n  return \"Unknown error occurred\";\n}\n\n// src/plugins/ticktick/constants.ts\nvar API_TIMEOUT = 5000;\nvar baseUrl = \"https://api.ticktick.com/open/v1\";\n\n// src/plugins/ticktick/lib/cache.ts\nvar projectsCache = null;\nfunction getCachedProjects() {\n  if (!projectsCache) {\n    return null;\n  }\n  const isValid = projectsCache && Date.now() - projectsCache.timestamp < CACHE_PROJECTS_TTL;\n  return isValid ? projectsCache.data : null;\n}\nfunction setCachedProjects(data) {\n  if (!data) {\n    projectsCache = null;\n    return;\n  }\n  projectsCache = {\n    data,\n    timestamp: Date.now()\n  };\n}\nvar CACHE_PROJECTS_TTL = 60 * 1000;\n\n// src/utils/string.ts\nfunction normalizeString(str) {\n  return str.normalize(\"NFKD\").replace(/\\p{Diacritic}/gu, \"\").replace(/[\\u{1F300}-\\u{1F9FF}]/gu, \"\").replace(/[\\u{1F600}-\\u{1F64F}]/gu, \"\").replace(/[\\u{2700}-\\u{27BF}]/gu, \"\").toLowerCase().trim();\n}\nvar whitespaceRegex = /\\s+/;\nfunction calculateSimilarity(str1, str2) {\n  const norm1 = normalizeString(str1);\n  const norm2 = normalizeString(str2);\n  if (norm1 === norm2) {\n    return 1;\n  }\n  const containsScore = norm1.includes(norm2) || norm2.includes(norm1) ? 0.8 : 0;\n  const words1 = new Set(norm1.split(whitespaceRegex));\n  const words2 = new Set(norm2.split(whitespaceRegex));\n  const commonWords = [...words1].filter((word) => words2.has(word));\n  const wordScore = commonWords.length / Math.max(words1.size, words2.size);\n  const lengthDiff = Math.abs(norm1.length - norm2.length);\n  const lengthPenalty = 1 - lengthDiff / Math.max(norm1.length, norm2.length);\n  const score = Math.max(containsScore * 0.6 + lengthPenalty * 0.4, wordScore * 0.7 + lengthPenalty * 0.3);\n  return score;\n}\n\n// src/plugins/ticktick/utils/api.ts\nfunction isRetriableError(statusCode) {\n  return statusCode !== 401 && statusCode < 500;\n}\nfunction buildRequestHeaders(userSettings) {\n  return {\n    \"Content-Type\": \"application/json\",\n    Authorization: `Bearer ${userSettings.accessKey}`\n  };\n}\n\n// src/plugins/ticktick/commands/projects/getProjects.ts\nasync function commandGetProjects(userSettings) {\n  const projectsCache2 = getCachedProjects();\n  if (projectsCache2) {\n    return { success: true, data: projectsCache2 };\n  }\n  try {\n    const response = await fetch(`${baseUrl}/project`, {\n      headers: buildRequestHeaders(userSettings),\n      signal: AbortSignal.timeout(API_TIMEOUT)\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: isRetriableError(response.status)\n      };\n    }\n    const data = await response.json();\n    setCachedProjects(data);\n    return { success: true, data };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to fetch projects: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ticktick/commands/tasks/getProjectTasks.ts\nasync function commandGetProjectTasks(params, userSettings) {\n  if (!(params.projectId || params.projectName)) {\n    return {\n      success: false,\n      error: \"projectId or projectName is required\",\n      canTryAnotherApproach: true\n    };\n  }\n  try {\n    let projectId = params.projectId;\n    if (!projectId) {\n      const projectsResponse = await commandGetProjects(userSettings);\n      if (!projectsResponse.success) {\n        return projectsResponse;\n      }\n      const project = projectsResponse.data.find((p) => p.name === params.projectName);\n      if (!project) {\n        return {\n          success: false,\n          error: `Project not found: ${params.projectName}`,\n          canTryAnotherApproach: true\n        };\n      }\n      projectId = project.id;\n    }\n    const response = await fetch(`${baseUrl}/project/${projectId}/data`, {\n      headers: buildRequestHeaders(userSettings),\n      signal: AbortSignal.timeout(API_TIMEOUT)\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: isRetriableError(response.status)\n      };\n    }\n    const data = await response.json();\n    if (data.tasks) {\n      for (const task of data.tasks) {\n        if (task.completedTime && Number.isInteger(task.completedTime)) {\n          task.completedTime = new Date(task.completedTime).toISOString();\n        }\n        if (task.items) {\n          for (const item of task.items) {\n            if (item.completedTime && Number.isInteger(item.completedTime)) {\n              item.completedTime = new Date(item.completedTime).toISOString();\n            }\n          }\n        }\n      }\n    }\n    return { success: true, data };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to fetch project tasks: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ticktick/lib/projects.ts\nasync function getProjectIdByName(projectName, userSettings) {\n  const projectsResponse = await commandGetProjects(userSettings);\n  if (!projectsResponse.success) {\n    return projectsResponse;\n  }\n  let bestMatch = null;\n  let bestScore = 0;\n  const MINIMUM_SCORE = 0.5;\n  for (const project of projectsResponse.data) {\n    const score = calculateSimilarity(project.name, projectName);\n    if (score > bestScore) {\n      bestScore = score;\n      bestMatch = project;\n    }\n    if (score === 1) {\n      break;\n    }\n  }\n  if (!bestMatch || bestScore < MINIMUM_SCORE) {\n    return {\n      success: false,\n      error: `Project not found: ${projectName}`,\n      canTryAnotherApproach: true\n    };\n  }\n  return { success: true, data: bestMatch.id };\n}\nasync function findProjectIdFromTaskReference(taskIdOrName, userSettings) {\n  try {\n    const projectsResponse = await commandGetProjects(userSettings);\n    if (!projectsResponse.success) {\n      return projectsResponse;\n    }\n    const sortedProjects = [...projectsResponse.data].sort((a, b) => a.sortOrder - b.sortOrder);\n    for (const project of sortedProjects) {\n      const tasksResponse = await commandGetProjectTasks({\n        command: \"get_project_tasks\",\n        projectId: project.id\n      }, userSettings);\n      if (!tasksResponse.success) {\n        continue;\n      }\n      if (tasksResponse.data.tasks.some((task) => task.id === taskIdOrName)) {\n        return { success: true, data: project.id };\n      }\n    }\n    let bestMatch = {\n      projectId: null,\n      score: 0\n    };\n    const MINIMUM_SCORE = 0.5;\n    for (const project of sortedProjects) {\n      const tasksResponse = await commandGetProjectTasks({\n        command: \"get_project_tasks\",\n        projectId: project.id\n      }, userSettings);\n      if (!tasksResponse.success) {\n        continue;\n      }\n      for (const task of tasksResponse.data.tasks) {\n        const score = calculateSimilarity(task.title, taskIdOrName);\n        if (score > bestMatch.score) {\n          bestMatch = { projectId: project.id, score };\n        }\n        if (score === 1) {\n          break;\n        }\n      }\n    }\n    if (bestMatch.projectId && bestMatch.score >= MINIMUM_SCORE) {\n      return { success: true, data: bestMatch.projectId };\n    }\n    return {\n      success: false,\n      error: `No task found matching ID or name: ${taskIdOrName}`,\n      canTryAnotherApproach: false\n    };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to get project ID: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\nasync function checkWritePermission(projectId, userSettings) {\n  if (!userSettings.allowedProjects) {\n    return { success: true, data: true };\n  }\n  const allowedProjects = userSettings.allowedProjects.split(\",\").map((p) => p.trim());\n  if (allowedProjects.length === 0) {\n    return { success: true, data: true };\n  }\n  if (allowedProjects.includes(projectId)) {\n    return { success: true, data: true };\n  }\n  const projectsResponse = await commandGetProjects(userSettings);\n  if (!projectsResponse.success) {\n    return projectsResponse;\n  }\n  const projects = projectsResponse.data;\n  const targetProject = projects.find((p) => p.id === projectId);\n  if (!targetProject) {\n    return {\n      success: false,\n      error: \"Project not found\",\n      canTryAnotherApproach: true\n    };\n  }\n  for (const allowedProject of allowedProjects) {\n    if (calculateSimilarity(targetProject.name, allowedProject) >= 0.8) {\n      return { success: true, data: true };\n    }\n  }\n  return {\n    success: false,\n    error: `Writing to project \"${targetProject.name}\" is not allowed. Allowed projects: ${userSettings.allowedProjects}`,\n    canTryAnotherApproach: false\n  };\n}\nasync function checkProjectModificationPermission(userSettings, operation, projectId) {\n  if (userSettings.allowProjectModification !== \"yes\") {\n    return {\n      success: false,\n      error: `Project ${operation} is not allowed`,\n      canTryAnotherApproach: false\n    };\n  }\n  if (projectId && operation !== \"creation\") {\n    const permissionCheck = await checkWritePermission(projectId, userSettings);\n    if (!permissionCheck.success) {\n      return permissionCheck;\n    }\n    if (!permissionCheck.data) {\n      return writeAccessDeniedResponse;\n    }\n  }\n  return { success: true, data: true };\n}\n\n// src/plugins/ticktick/commands/projects/createProject.ts\nasync function commandCreateProject(params, userSettings) {\n  const permissionCheck = await checkProjectModificationPermission(userSettings, \"creation\");\n  if (!permissionCheck.success) {\n    return permissionCheck;\n  }\n  if (!params.projectData?.name) {\n    return {\n      success: false,\n      error: \"projectData with name is required\",\n      canTryAnotherApproach: true\n    };\n  }\n  try {\n    const response = await fetch(`${baseUrl}/project`, {\n      method: \"POST\",\n      headers: buildRequestHeaders(userSettings),\n      body: JSON.stringify(params.projectData),\n      signal: AbortSignal.timeout(API_TIMEOUT)\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: isRetriableError(response.status)\n      };\n    }\n    const data = await response.json();\n    setCachedProjects(null);\n    return { success: true, data };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to create project: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ticktick/commands/projects/deleteProject.ts\nasync function commandDeleteProject(params, userSettings) {\n  let projectId = params.projectId;\n  if (!projectId && params.projectName) {\n    const projectIdResponse = await getProjectIdByName(params.projectName, userSettings);\n    if (!projectIdResponse.success) {\n      return projectIdResponse;\n    }\n    projectId = projectIdResponse.data;\n  }\n  if (!projectId) {\n    return {\n      success: false,\n      error: \"projectId or projectName is required\",\n      canTryAnotherApproach: true\n    };\n  }\n  const permissionCheck = await checkProjectModificationPermission(userSettings, \"deletion\", projectId);\n  if (!permissionCheck.success) {\n    return permissionCheck;\n  }\n  try {\n    const projectTasks = await commandGetProjectTasks({ command: \"get_project_tasks\", projectId }, userSettings);\n    if (!projectTasks.success) {\n      return projectTasks;\n    }\n    if (projectTasks.data.tasks && projectTasks.data.tasks.length > 0) {\n      return {\n        success: false,\n        error: `Cannot delete project that has ${projectTasks.data.tasks.length} tasks. Remove all tasks from the project first.`,\n        canTryAnotherApproach: false\n      };\n    }\n    const response = await fetch(`${baseUrl}/project/${projectId}`, {\n      method: \"DELETE\",\n      headers: buildRequestHeaders(userSettings),\n      signal: AbortSignal.timeout(API_TIMEOUT)\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: isRetriableError(response.status)\n      };\n    }\n    setCachedProjects(null);\n    return { success: true, data: `Project ${projectId} deleted` };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to delete project: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ticktick/commands/projects/getProjectById.ts\nasync function commandGetProjectById(params, userSettings) {\n  let projectId = params.projectId;\n  if (!projectId && params.projectName) {\n    const projectIdResponse = await getProjectIdByName(params.projectName, userSettings);\n    if (!projectIdResponse.success) {\n      return projectIdResponse;\n    }\n    projectId = projectIdResponse.data;\n  }\n  if (!projectId) {\n    return {\n      success: false,\n      error: \"projectId or projectName is required\",\n      canTryAnotherApproach: true\n    };\n  }\n  try {\n    const response = await fetch(`${baseUrl}/project/${projectId}`, {\n      headers: buildRequestHeaders(userSettings),\n      signal: AbortSignal.timeout(API_TIMEOUT)\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: isRetriableError(response.status)\n      };\n    }\n    const data = await response.json();\n    return { success: true, data };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to fetch project: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ticktick/commands/projects/updateProject.ts\nasync function commandUpdateProject(params, userSettings) {\n  if (!params.projectData) {\n    return {\n      success: false,\n      error: \"projectData is required\",\n      canTryAnotherApproach: true\n    };\n  }\n  if (params.projectId && !params.projectData.id) {\n    params.projectData.id = params.projectId;\n  }\n  if (!params.projectData.id && params.projectName) {\n    const projectIdResponse = await getProjectIdByName(params.projectName, userSettings);\n    if (!projectIdResponse.success) {\n      return projectIdResponse;\n    }\n    params.projectData.id = projectIdResponse.data;\n  }\n  if (!params.projectData.id) {\n    return {\n      success: false,\n      error: \"Project ID is required (either in projectData.id, params.projectId, or via params.projectName)\",\n      canTryAnotherApproach: true\n    };\n  }\n  const permissionCheck = await checkProjectModificationPermission(userSettings, \"modification\", params.projectData.id);\n  if (!permissionCheck.success) {\n    return permissionCheck;\n  }\n  try {\n    const response = await fetch(`${baseUrl}/project/${params.projectData.id}`, {\n      method: \"POST\",\n      headers: buildRequestHeaders(userSettings),\n      body: JSON.stringify(params.projectData),\n      signal: AbortSignal.timeout(API_TIMEOUT)\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: isRetriableError(response.status)\n      };\n    }\n    const data = await response.json();\n    setCachedProjects(null);\n    return { success: true, data };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to update project: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ticktick/commands/tasks/completeTask.ts\nasync function commandCompleteTask(params, userSettings) {\n  const taskId = params.taskId;\n  let projectId = params.projectId;\n  if (!taskId) {\n    return {\n      success: false,\n      error: \"taskId is required\",\n      canTryAnotherApproach: true\n    };\n  }\n  try {\n    if (!projectId) {\n      if (params.projectName) {\n        const projectIdResponse = await getProjectIdByName(params.projectName, userSettings);\n        if (!projectIdResponse.success) {\n          return projectIdResponse;\n        }\n        projectId = projectIdResponse.data;\n      } else {\n        const projectIdResponse = await findProjectIdFromTaskReference(taskId, userSettings);\n        if (!projectIdResponse.success) {\n          return projectIdResponse;\n        }\n        projectId = projectIdResponse.data;\n      }\n    }\n    const permissionCheck = await checkWritePermission(projectId, userSettings);\n    if (!permissionCheck.success) {\n      return permissionCheck;\n    }\n    if (!permissionCheck.data) {\n      return writeAccessDeniedResponse;\n    }\n    const response = await fetch(`${baseUrl}/project/${projectId}/task/${taskId}/complete`, {\n      method: \"POST\",\n      headers: buildRequestHeaders(userSettings),\n      signal: AbortSignal.timeout(API_TIMEOUT)\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: isRetriableError(response.status)\n      };\n    }\n    return { success: true, data: `Task ${taskId} completed` };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to complete task: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ticktick/commands/tasks/createTask.ts\nasync function commandCreateTask(params, userSettings) {\n  if (!params.taskData?.title) {\n    return {\n      success: false,\n      error: \"taskData with title is required\",\n      canTryAnotherApproach: true\n    };\n  }\n  if (!params.taskData.projectId && params.projectId) {\n    params.taskData.projectId = params.projectId;\n  }\n  if (params.taskData.content && params.taskData.items) {\n    return {\n      success: false,\n      error: \"Task cannot have both content and items (subtasks)\",\n      canTryAnotherApproach: true\n    };\n  }\n  try {\n    if (!params.taskData.projectId && params.projectName) {\n      const projectIdResponse = await getProjectIdByName(params.projectName, userSettings);\n      if (!projectIdResponse.success) {\n        return projectIdResponse;\n      }\n      params.taskData.projectId = projectIdResponse.data;\n    }\n    if (!params.taskData.projectId) {\n      return {\n        success: false,\n        error: \"projectId in taskData is required\",\n        canTryAnotherApproach: true\n      };\n    }\n    const permissionCheck = await checkWritePermission(params.taskData.projectId, userSettings);\n    if (!permissionCheck.success) {\n      return permissionCheck;\n    }\n    if (!permissionCheck.data) {\n      return writeAccessDeniedResponse;\n    }\n    const response = await fetch(`${baseUrl}/task`, {\n      method: \"POST\",\n      headers: buildRequestHeaders(userSettings),\n      body: JSON.stringify(params.taskData),\n      signal: AbortSignal.timeout(API_TIMEOUT)\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: isRetriableError(response.status)\n      };\n    }\n    const data = await response.json();\n    return { success: true, data };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to create task: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ticktick/commands/tasks/deleteTask.ts\nasync function commandDeleteTask(params, userSettings) {\n  const taskId = params.taskId;\n  let projectId = params.projectId;\n  if (!taskId) {\n    return {\n      success: false,\n      error: \"taskId is required\",\n      canTryAnotherApproach: true\n    };\n  }\n  try {\n    if (!projectId) {\n      if (params.projectName) {\n        const projectIdResponse = await getProjectIdByName(params.projectName, userSettings);\n        if (!projectIdResponse.success) {\n          return projectIdResponse;\n        }\n        projectId = projectIdResponse.data;\n      } else {\n        const projectIdResponse = await findProjectIdFromTaskReference(taskId, userSettings);\n        if (!projectIdResponse.success) {\n          return projectIdResponse;\n        }\n        projectId = projectIdResponse.data;\n      }\n    }\n    const permissionCheck = await checkWritePermission(projectId, userSettings);\n    if (!permissionCheck.success) {\n      return permissionCheck;\n    }\n    if (!permissionCheck.data) {\n      return writeAccessDeniedResponse;\n    }\n    const response = await fetch(`${baseUrl}/project/${projectId}/task/${taskId}`, {\n      method: \"DELETE\",\n      headers: buildRequestHeaders(userSettings),\n      signal: AbortSignal.timeout(API_TIMEOUT)\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: isRetriableError(response.status)\n      };\n    }\n    return { success: true, data: `Task ${taskId} deleted` };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to delete task: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ticktick/commands/tasks/updateTask.ts\nasync function commandUpdateTask(params, userSettings) {\n  if (!params.taskData) {\n    return {\n      success: false,\n      error: \"taskData is required for update\",\n      canTryAnotherApproach: true\n    };\n  }\n  if (params.taskId && !params.taskData.id) {\n    params.taskData.id = params.taskId;\n  }\n  if (!params.taskData.id) {\n    return {\n      success: false,\n      error: \"taskId is required (either in taskData.id or params.taskId)\",\n      canTryAnotherApproach: true\n    };\n  }\n  if (params.projectId && !params.taskData.projectId) {\n    params.taskData.projectId = params.projectId;\n  }\n  if (params.taskData.content && params.taskData.items) {\n    return {\n      success: false,\n      error: \"Task cannot have both content and items (subtasks)\",\n      canTryAnotherApproach: true\n    };\n  }\n  try {\n    let taskProjectId;\n    if (params.taskData.projectId) {\n      const currentProjectResponse = await findProjectIdFromTaskReference(params.taskData.id, userSettings);\n      if (!currentProjectResponse.success) {\n        return currentProjectResponse;\n      }\n      if (params.taskData.projectId !== currentProjectResponse.data) {\n        return {\n          success: false,\n          error: \"Cannot change task's project - create a new task in the target project instead\",\n          canTryAnotherApproach: false\n        };\n      }\n      taskProjectId = params.taskData.projectId;\n    } else {\n      const projectIdResponse = await findProjectIdFromTaskReference(params.taskData.id, userSettings);\n      if (!projectIdResponse.success) {\n        return projectIdResponse;\n      }\n      taskProjectId = projectIdResponse.data;\n    }\n    params.taskData.projectId = taskProjectId;\n    const permissionCheck = await checkWritePermission(taskProjectId, userSettings);\n    if (!permissionCheck.success) {\n      return permissionCheck;\n    }\n    if (!permissionCheck.data) {\n      return writeAccessDeniedResponse;\n    }\n    const response = await fetch(`${baseUrl}/task/${params.taskData.id}`, {\n      method: \"POST\",\n      headers: buildRequestHeaders(userSettings),\n      body: JSON.stringify(params.taskData),\n      signal: AbortSignal.timeout(API_TIMEOUT)\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: isRetriableError(response.status)\n      };\n    }\n    const data = await response.json();\n    return { success: true, data };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to update task: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ticktick/index.ts\nfunction ticktick_plugin(params, userSettings) {\n  switch (params.command) {\n    case \"get_projects\": {\n      return commandGetProjects(userSettings);\n    }\n    case \"get_project_by_id\": {\n      return commandGetProjectById(params, userSettings);\n    }\n    case \"get_project_tasks\": {\n      return commandGetProjectTasks(params, userSettings);\n    }\n    case \"update_task\": {\n      return commandUpdateTask(params, userSettings);\n    }\n    case \"create_task\": {\n      return commandCreateTask(params, userSettings);\n    }\n    case \"complete_task\": {\n      return commandCompleteTask(params, userSettings);\n    }\n    case \"delete_task\": {\n      return commandDeleteTask(params, userSettings);\n    }\n    case \"create_project\": {\n      return commandCreateProject(params, userSettings);\n    }\n    case \"update_project\": {\n      return commandUpdateProject(params, userSettings);\n    }\n    case \"delete_project\": {\n      return commandDeleteProject(params, userSettings);\n    }\n    default: {\n      return { success: false, error: \"Unknown command\" };\n    }\n  }\n}\n\n"
+}

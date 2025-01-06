@@ -1,0 +1,66 @@
+{
+  "uuid": "876103dd-a83d-4e04-84cc-9a3c6a34b379",
+  "version": 1,
+  "title": "YNAB",
+  "emoji": "💸",
+  "overviewMarkdown": "# YNAB (You Need A Budget) plugin for TypingMind\n\n> [!WARNING]\n> This plugin is still work in progress and may not work properly.\n\nAdd [YNAB](https://ynab.com/) budget functionality in [TypingMind](https://www.typingmind.com/).\n\n**IMPORTANT:** AI can and does hallucinate A LOT. It doesn't handle YNAB's [milliunits](https://api.ynab.com/#formats), so the numbers may be off for now.  \nAlso, turns out that AI is extremely bad at math. It can't even add up numbers correctly (may need to use eval or Simple Calculator plugin for that).\n\n## Setup\n\n### Install the plugin\n\n1. Import the plugin.\n    1. Open TypingMind and go to the *Plugins* page.\n    1. Click on the *Import plugins* button.\n    1. Paste the following URL: `https://github.com/AviDuda/typing-racc/tree/gh-pages/ynab`\n    1. Press *Continue* and then *Import Plugin*.\n1. Get the access token.\n    1. Go to [YNAB developer settings](https://app.ynab.com/settings/developer).\n    1. In the Personal Access Token section, click on the *New Token* button.\n    1. Enter your password and click on the *Generate* button.\n1. Set the access token.\n    1. Go back to TypingMind and make sure you are on the *Plugins* page.\n    1. Click on the YNAB plugin and paste the token into the *Access token* field.\n    1. Click on the *Save* button.\n\n## Development\n\n### Updating the OpenAPI schema\n\nFrom the root directory, run `bunx openapi-typescript https://api.ynab.com/papi/open_api_spec.yaml -o src/plugins/ynab/types/api.ts --root-types` to update the OpenAPI schema.\n",
+  "implementationType": "javascript",
+  "outputType": "respond_to_ai",
+  "openaiSpec": {
+    "name": "ynab_plugin",
+    "description": "YNAB plugin for TypingMind",
+    "parallel_tool_calls": false,
+    "parameters": {
+      "type": "object",
+      "required": [
+        "command"
+      ],
+      "properties": {
+        "command": {
+          "description": "The command to execute",
+          "type": "string",
+          "enum": [
+            "list_budgets",
+            "get_budget_month",
+            "get_budget_month_transactions"
+          ]
+        },
+        "budgetsWithAccounts": {
+          "description": "Whether to include accounts in the budget list",
+          "type": "boolean",
+          "default": false
+        },
+        "budgetId": {
+          "description": "The budget ID",
+          "type": "string"
+        },
+        "budgetMonth": {
+          "description": "The budget month. Format: YYYY-MM-DD or `current`",
+          "type": "string"
+        },
+        "transactionsSinceDate": {
+          "description": "Filter transactions since this date. Format: YYYY-MM-DD",
+          "type": "string"
+        },
+        "transactionType": {
+          "description": "Filter transactions by type",
+          "type": "string",
+          "enum": [
+            "uncategorized",
+            "unapproved"
+          ]
+        }
+      }
+    }
+  },
+  "userSettings": [
+    {
+      "name": "accessToken",
+      "label": "YNAB API Personal Access Token",
+      "description": "See the plugin documentation for instructions on how to obtain this token.",
+      "type": "password",
+      "required": true
+    }
+  ],
+  "code": "// src/utils/error.ts\nfunction isError(error) {\n  return error instanceof Error;\n}\nfunction getErrorMessage(error) {\n  if (isError(error)) {\n    return error.message;\n  }\n  if (typeof error === \"string\") {\n    return error;\n  }\n  return \"Unknown error occurred\";\n}\n\n// src/plugins/ynab/constants.ts\nvar baseUrl = \"https://api.ynab.com/v1\";\n\n// src/plugins/ynab/commands/budgets/getBudgetMonth.ts\nasync function commandGetBudgetMonth(params, userSettings) {\n  try {\n    const url = `${baseUrl}/budgets/${params.budgetId}/months/${params.budgetMonth}`;\n    const response = await fetch(url, {\n      headers: {\n        Authorization: `Bearer ${userSettings.accessToken}`\n      }\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: response.status >= 500\n      };\n    }\n    const data = await response.json();\n    return { success: true, data: data.data };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to fetch budget month: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ynab/commands/budgets/getBudgetMonthTransactions.ts\nvar dateFormatRegex = /^\\d{4}-\\d{2}-\\d{2}$/;\nasync function commandGetBudgetMonthTransactions(params, userSettings) {\n  try {\n    const url = new URL(`${baseUrl}/budgets/${params.budgetId}/months/${params.budgetMonth}/transactions`);\n    if (typeof params.transactionsSinceDate === \"string\") {\n      if (params.transactionsSinceDate.match(dateFormatRegex) === null) {\n        return {\n          success: false,\n          error: \"Invalid date format. Expected 'YYYY-MM-DD'.\",\n          canTryAnotherApproach: false\n        };\n      }\n      url.searchParams.set(\"since_date\", params.transactionsSinceDate);\n    }\n    if (params.transactionType !== undefined && [\"uncategorized\", \"unapproved\"].includes(params.transactionType)) {\n      url.searchParams.set(\"type\", params.transactionType);\n    }\n    const response = await fetch(url, {\n      headers: {\n        Authorization: `Bearer ${userSettings.accessToken}`\n      }\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: response.status >= 500\n      };\n    }\n    const data = await response.json();\n    return { success: true, data: data.data };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to fetch budget month: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ynab/commands/budgets/listBudgets.ts\nasync function commandListBudgets(params, userSettings) {\n  try {\n    let url = \"https://api.ynab.com/v1/budgets\";\n    if (params.budgetsWithAccounts) {\n      url += \"?include_accounts=true\";\n    }\n    const response = await fetch(url, {\n      headers: {\n        Authorization: `Bearer ${userSettings.accessToken}`\n      }\n    });\n    if (!response.ok) {\n      return {\n        success: false,\n        error: `HTTP error! status: ${response.status}`,\n        canTryAnotherApproach: response.status >= 500\n      };\n    }\n    const data = await response.json();\n    return { success: true, data: data.data };\n  } catch (error) {\n    return {\n      success: false,\n      error: `Failed to fetch budgets: ${getErrorMessage(error)}`,\n      canTryAnotherApproach: true\n    };\n  }\n}\n\n// src/plugins/ynab/index.ts\nfunction ynab_plugin(params, userSettings) {\n  switch (params.command) {\n    case \"list_budgets\": {\n      return commandListBudgets(params, userSettings);\n    }\n    case \"get_budget_month\": {\n      return commandGetBudgetMonth(params, userSettings);\n    }\n    case \"get_budget_month_transactions\": {\n      return commandGetBudgetMonthTransactions(params, userSettings);\n    }\n    default: {\n      return { success: false, error: \"Unknown command\" };\n    }\n  }\n}\n\n"
+}
