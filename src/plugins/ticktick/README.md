@@ -31,7 +31,7 @@ You don't need to enable the plugin. It will be automatically enabled if you use
 
 ### Install the agent
 
-1. Download the [agent JSON file](https://raw.githubusercontent.com/AviDuda/typingmind-plugins/gh-pages/ticktick/agent.json).
+1. Download the [agent JSON file](https://raw.githubusercontent.com/AviDuda/typing-racc/refs/heads/gh-pages/ticktick/agent.json).
 1. Import the agent.
     1. Open TypingMind and go to the *Agents* page.
     1. Click on the arrow next to the *Create AI Agent* button and select *Import from JSON*.
