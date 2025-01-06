@@ -8,7 +8,11 @@ Click on the plugin name to see the documentation for that plugin.
 
 ### [TickTick](./src/plugins/ticktick/README.md)
 
-A plugin to manage your tasks in TickTick using TypingMind.
+A plugin to manage your tasks in [TickTick](https://ticktick.com/) task manager using TypingMind.
+
+### [YNAB](./src/plugins/ynab/README.md) - 🚧 work in progress 🚧
+
+A plugin to manage your budget in [YNAB](https://ynab.com/) (You Need A Budget) using TypingMind.
 
 ## Development
 
