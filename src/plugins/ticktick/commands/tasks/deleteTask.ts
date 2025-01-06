@@ -1,21 +1,24 @@
+import {
+	getErrorMessage,
+	writeAccessDeniedResponse,
+} from "../../../../utils/error";
+import type { ResultAsync } from "../../../../utils/result";
 import { API_TIMEOUT, baseUrl } from "../../constants";
 import {
 	checkWritePermission,
 	findProjectIdFromTaskReference,
 	getProjectIdByName,
 } from "../../lib/projects";
-import type { UserSettings } from "../../types/api";
-import type { CommandParams } from "../../types/plugin";
+import type { TickTickUserSettings } from "../../types/plugin";
+import type { TickTickCommandParams } from "../../types/plugin";
 import { buildRequestHeaders, isRetriableError } from "../../utils/api";
-import { getErrorMessage, writeAccessDeniedResponse } from "../../utils/error";
-import type { ResultAsync } from "../../utils/result";
 
 /**
  * Delete a task in TickTick.
  */
 export async function commandDeleteTask(
-	params: CommandParams<"delete_task">,
-	userSettings: UserSettings,
+	params: TickTickCommandParams<"delete_task">,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<string> {
 	const taskId = params.taskId;
 	let projectId = params.projectId;
@@ -52,7 +55,10 @@ export async function commandDeleteTask(
 		}
 
 		// Check write permissions
-		const permissionCheck = await checkWritePermission(projectId, userSettings);
+		const permissionCheck = await checkWritePermission(
+			projectId,
+			userSettings,
+		);
 		if (!permissionCheck.success) {
 			return permissionCheck;
 		}

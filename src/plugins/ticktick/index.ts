@@ -8,15 +8,18 @@ import { commandCreateTask } from "./commands/tasks/createTask";
 import { commandDeleteTask } from "./commands/tasks/deleteTask";
 import { commandGetProjectTasks } from "./commands/tasks/getProjectTasks";
 import { commandUpdateTask } from "./commands/tasks/updateTask";
-import type { UserSettings } from "./types/api";
-import type { CommandParams, CommandType } from "./types/plugin";
+import type { TickTickUserSettings } from "./types/plugin";
+import type {
+	TickTickCommandParams,
+	TickTickCommandType,
+} from "./types/plugin";
 
 /**
  * TickTick plugin for TypingMind.
  */
-export function ticktick_plugin<TCommand extends keyof CommandType>(
-	params: CommandParams<TCommand>,
-	userSettings: UserSettings,
+export function ticktick_plugin<TCommand extends keyof TickTickCommandType>(
+	params: TickTickCommandParams<TCommand>,
+	userSettings: TickTickUserSettings,
 ) {
 	switch (params.command) {
 		case "get_projects": {

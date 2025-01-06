@@ -1,4 +1,4 @@
-import type { UserSettings } from "../types/api";
+import type { TickTickUserSettings } from "../types/plugin";
 
 /**
  * Check if an HTTP status code indicates a retriable error
@@ -16,7 +16,7 @@ export function isRetriableError(statusCode: number): boolean {
 /**
  * Build request headers for TickTick API.
  */
-export function buildRequestHeaders(userSettings: UserSettings) {
+export function buildRequestHeaders(userSettings: TickTickUserSettings) {
 	return {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${userSettings.accessKey}`,

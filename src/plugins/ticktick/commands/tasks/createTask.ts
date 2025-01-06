@@ -1,17 +1,21 @@
+import {
+	getErrorMessage,
+	writeAccessDeniedResponse,
+} from "../../../../utils/error";
+import type { ResultAsync } from "../../../../utils/result";
 import { API_TIMEOUT, baseUrl } from "../../constants";
 import { checkWritePermission, getProjectIdByName } from "../../lib/projects";
-import type { Task, UserSettings } from "../../types/api";
-import type { CommandParams } from "../../types/plugin";
+import type { Task } from "../../types/api";
+import type { TickTickUserSettings } from "../../types/plugin";
+import type { TickTickCommandParams } from "../../types/plugin";
 import { buildRequestHeaders, isRetriableError } from "../../utils/api";
-import { getErrorMessage, writeAccessDeniedResponse } from "../../utils/error";
-import type { ResultAsync } from "../../utils/result";
 
 /**
  * Create a new task in TickTick.
  */
 export async function commandCreateTask(
-	params: CommandParams<"create_task">,
-	userSettings: UserSettings,
+	params: TickTickCommandParams<"create_task">,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<Task> {
 	if (!params.taskData?.title) {
 		return {

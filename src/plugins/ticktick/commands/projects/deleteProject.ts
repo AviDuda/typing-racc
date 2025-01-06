@@ -1,22 +1,22 @@
+import { getErrorMessage } from "../../../../utils/error";
+import type { ResultAsync } from "../../../../utils/result";
 import { API_TIMEOUT, baseUrl } from "../../constants";
 import { setCachedProjects } from "../../lib/cache";
 import {
 	checkProjectModificationPermission,
 	getProjectIdByName,
 } from "../../lib/projects";
-import type { UserSettings } from "../../types/api";
-import type { CommandParams } from "../../types/plugin";
+import type { TickTickUserSettings } from "../../types/plugin";
+import type { TickTickCommandParams } from "../../types/plugin";
 import { buildRequestHeaders, isRetriableError } from "../../utils/api";
-import { getErrorMessage } from "../../utils/error";
-import type { ResultAsync } from "../../utils/result";
 import { commandGetProjectTasks } from "../tasks/getProjectTasks";
 
 /**
  * Delete a project in TickTick.
  */
 export async function commandDeleteProject(
-	params: CommandParams<"delete_project">,
-	userSettings: UserSettings,
+	params: TickTickCommandParams<"delete_project">,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<string> {
 	let projectId = params.projectId;
 

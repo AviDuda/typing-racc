@@ -1,16 +1,19 @@
+import {
+	getErrorMessage,
+	writeAccessDeniedResponse,
+} from "../../../utils/error";
+import type { ResultAsync } from "../../../utils/result";
+import { calculateSimilarity } from "../../../utils/string";
 import { commandGetProjects } from "../commands/projects/getProjects";
 import { commandGetProjectTasks } from "../commands/tasks/getProjectTasks";
-import type { UserSettings } from "../types/api";
-import { getErrorMessage, writeAccessDeniedResponse } from "../utils/error";
-import type { ResultAsync } from "../utils/result";
-import { calculateSimilarity } from "../utils/string";
+import type { TickTickUserSettings } from "../types/plugin";
 
 /**
  * Helper function to get project ID from project name
  */
 export async function getProjectIdByName(
 	projectName: string,
-	userSettings: UserSettings,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<string> {
 	const projectsResponse = await commandGetProjects(userSettings);
 	if (!projectsResponse.success) {
@@ -51,7 +54,7 @@ export async function getProjectIdByName(
  */
 export async function findProjectIdFromTaskReference(
 	taskIdOrName: string,
-	userSettings: UserSettings,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<string> {
 	try {
 		const projectsResponse = await commandGetProjects(userSettings);
@@ -78,7 +81,11 @@ export async function findProjectIdFromTaskReference(
 				continue;
 			}
 
-			if (tasksResponse.data.tasks.some((task) => task.id === taskIdOrName)) {
+			if (
+				tasksResponse.data.tasks.some(
+					(task) => task.id === taskIdOrName,
+				)
+			) {
 				return { success: true, data: project.id };
 			}
 		}
@@ -139,7 +146,7 @@ export async function findProjectIdFromTaskReference(
  */
 export async function checkWritePermission(
 	projectId: string,
-	userSettings: UserSettings,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<boolean> {
 	if (!userSettings.allowedProjects) {
 		return { success: true, data: true }; // No restrictions
@@ -194,7 +201,7 @@ export async function checkWritePermission(
  * @param projectId - Required for modification/deletion
  */
 export async function checkProjectModificationPermission(
-	userSettings: UserSettings,
+	userSettings: TickTickUserSettings,
 	operation: "creation" | "modification" | "deletion",
 	projectId?: string,
 ): ResultAsync<boolean> {
@@ -209,7 +216,10 @@ export async function checkProjectModificationPermission(
 
 	// For modification/deletion, also check if we have access to the project
 	if (projectId && operation !== "creation") {
-		const permissionCheck = await checkWritePermission(projectId, userSettings);
+		const permissionCheck = await checkWritePermission(
+			projectId,
+			userSettings,
+		);
 		if (!permissionCheck.success) {
 			return permissionCheck;
 		}

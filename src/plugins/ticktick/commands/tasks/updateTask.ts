@@ -1,20 +1,24 @@
+import {
+	getErrorMessage,
+	writeAccessDeniedResponse,
+} from "../../../../utils/error";
+import type { ResultAsync } from "../../../../utils/result";
 import { API_TIMEOUT, baseUrl } from "../../constants";
 import {
 	checkWritePermission,
 	findProjectIdFromTaskReference,
 } from "../../lib/projects";
-import type { Task, UserSettings } from "../../types/api";
-import type { CommandParams } from "../../types/plugin";
+import type { Task } from "../../types/api";
+import type { TickTickUserSettings } from "../../types/plugin";
+import type { TickTickCommandParams } from "../../types/plugin";
 import { buildRequestHeaders, isRetriableError } from "../../utils/api";
-import { getErrorMessage, writeAccessDeniedResponse } from "../../utils/error";
-import type { ResultAsync } from "../../utils/result";
 
 /**
  * Update a task in TickTick.
  */
 export async function commandUpdateTask(
-	params: CommandParams<"update_task">,
-	userSettings: UserSettings,
+	params: TickTickCommandParams<"update_task">,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<Task> {
 	if (!params.taskData) {
 		return {
@@ -67,8 +71,7 @@ export async function commandUpdateTask(
 			if (params.taskData.projectId !== currentProjectResponse.data) {
 				return {
 					success: false,
-					error:
-						"Cannot change task's project - create a new task in the target project instead",
+					error: "Cannot change task's project - create a new task in the target project instead",
 					canTryAnotherApproach: false,
 				};
 			}

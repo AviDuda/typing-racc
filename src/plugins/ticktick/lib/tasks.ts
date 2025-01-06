@@ -1,16 +1,16 @@
+import { getErrorMessage } from "../../../utils/error";
+import type { ResultAsync } from "../../../utils/result";
+import { calculateSimilarity } from "../../../utils/string";
 import { commandGetProjects } from "../commands/projects/getProjects";
 import { commandGetProjectTasks } from "../commands/tasks/getProjectTasks";
-import type { UserSettings } from "../types/api";
-import { getErrorMessage } from "../utils/error";
-import type { ResultAsync } from "../utils/result";
-import { calculateSimilarity } from "../utils/string";
+import type { TickTickUserSettings } from "../types/plugin";
 
 /**
  * Find project ID from a task ID or name reference
  */
 export async function findProjectIdFromTaskReference(
 	taskIdOrName: string,
-	userSettings: UserSettings,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<string> {
 	try {
 		const projectsResponse = await commandGetProjects(userSettings);
@@ -37,7 +37,11 @@ export async function findProjectIdFromTaskReference(
 				continue;
 			}
 
-			if (tasksResponse.data.tasks.some((task) => task.id === taskIdOrName)) {
+			if (
+				tasksResponse.data.tasks.some(
+					(task) => task.id === taskIdOrName,
+				)
+			) {
 				return { success: true, data: project.id };
 			}
 		}

@@ -1,12 +1,13 @@
+import { getErrorMessage } from "../../../../utils/error";
+import type { ResultAsync } from "../../../../utils/result";
 import { API_TIMEOUT, baseUrl } from "../../constants";
 import { getCachedProjects, setCachedProjects } from "../../lib/cache";
-import type { Project, UserSettings } from "../../types/api";
+import type { Project } from "../../types/api";
+import type { TickTickUserSettings } from "../../types/plugin";
 import { buildRequestHeaders, isRetriableError } from "../../utils/api";
-import { getErrorMessage } from "../../utils/error";
-import type { ResultAsync } from "../../utils/result";
 
 export async function commandGetProjects(
-	userSettings: UserSettings,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<Project[]> {
 	// Check cache first
 	const projectsCache = getCachedProjects();

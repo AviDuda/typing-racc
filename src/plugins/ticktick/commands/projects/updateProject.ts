@@ -1,21 +1,22 @@
+import { getErrorMessage } from "../../../../utils/error";
+import type { ResultAsync } from "../../../../utils/result";
 import { API_TIMEOUT, baseUrl } from "../../constants";
 import { setCachedProjects } from "../../lib/cache";
 import {
 	checkProjectModificationPermission,
 	getProjectIdByName,
 } from "../../lib/projects";
-import type { Project, UserSettings } from "../../types/api";
-import type { CommandParams } from "../../types/plugin";
+import type { Project } from "../../types/api";
+import type { TickTickUserSettings } from "../../types/plugin";
+import type { TickTickCommandParams } from "../../types/plugin";
 import { buildRequestHeaders, isRetriableError } from "../../utils/api";
-import { getErrorMessage } from "../../utils/error";
-import type { ResultAsync } from "../../utils/result";
 
 /**
  * Update a project in TickTick.
  */
 export async function commandUpdateProject(
-	params: CommandParams<"update_project">,
-	userSettings: UserSettings,
+	params: TickTickCommandParams<"update_project">,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<Project> {
 	if (!params.projectData) {
 		return {
@@ -45,8 +46,7 @@ export async function commandUpdateProject(
 	if (!params.projectData.id) {
 		return {
 			success: false,
-			error:
-				"Project ID is required (either in projectData.id, params.projectId, or via params.projectName)",
+			error: "Project ID is required (either in projectData.id, params.projectId, or via params.projectName)",
 			canTryAnotherApproach: true,
 		};
 	}

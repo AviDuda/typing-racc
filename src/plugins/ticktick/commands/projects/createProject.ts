@@ -1,18 +1,19 @@
+import { getErrorMessage } from "../../../../utils/error";
+import type { ResultAsync } from "../../../../utils/result";
 import { API_TIMEOUT, baseUrl } from "../../constants";
 import { setCachedProjects } from "../../lib/cache";
 import { checkProjectModificationPermission } from "../../lib/projects";
-import type { Project, UserSettings } from "../../types/api";
-import type { CommandParams } from "../../types/plugin";
+import type { Project } from "../../types/api";
+import type { TickTickUserSettings } from "../../types/plugin";
+import type { TickTickCommandParams } from "../../types/plugin";
 import { buildRequestHeaders, isRetriableError } from "../../utils/api";
-import { getErrorMessage } from "../../utils/error";
-import type { ResultAsync } from "../../utils/result";
 
 /**
  * Create a new project in TickTick.
  */
 export async function commandCreateProject(
-	params: CommandParams<"create_project">,
-	userSettings: UserSettings,
+	params: TickTickCommandParams<"create_project">,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<Project> {
 	const permissionCheck = await checkProjectModificationPermission(
 		userSettings,

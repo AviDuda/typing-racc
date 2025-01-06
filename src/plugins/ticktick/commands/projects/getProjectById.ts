@@ -1,17 +1,18 @@
+import { getErrorMessage } from "../../../../utils/error";
+import type { ResultAsync } from "../../../../utils/result";
 import { API_TIMEOUT, baseUrl } from "../../constants";
 import { getProjectIdByName } from "../../lib/projects";
-import type { Project, UserSettings } from "../../types/api";
-import type { CommandParams } from "../../types/plugin";
+import type { Project } from "../../types/api";
+import type { TickTickUserSettings } from "../../types/plugin";
+import type { TickTickCommandParams } from "../../types/plugin";
 import { buildRequestHeaders, isRetriableError } from "../../utils/api";
-import { getErrorMessage } from "../../utils/error";
-import type { ResultAsync } from "../../utils/result";
 
 /**
  * Get a specific project by ID from TickTick API.
  */
 export async function commandGetProjectById(
-	params: CommandParams<"get_project_by_id">,
-	userSettings: UserSettings,
+	params: TickTickCommandParams<"get_project_by_id">,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<Project> {
 	let projectId = params.projectId;
 

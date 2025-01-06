@@ -1,17 +1,18 @@
+import { getErrorMessage } from "../../../../utils/error";
+import type { ResultAsync } from "../../../../utils/result";
 import { API_TIMEOUT, baseUrl } from "../../constants";
-import type { ProjectData, UserSettings } from "../../types/api";
-import type { CommandParams } from "../../types/plugin";
+import type { ProjectData } from "../../types/api";
+import type { TickTickUserSettings } from "../../types/plugin";
+import type { TickTickCommandParams } from "../../types/plugin";
 import { buildRequestHeaders, isRetriableError } from "../../utils/api";
-import { getErrorMessage } from "../../utils/error";
-import type { ResultAsync } from "../../utils/result";
 import { commandGetProjects } from "../projects/getProjects";
 
 /**
  * Get tasks for a specific project from TickTick API.
  */
 export async function commandGetProjectTasks(
-	params: CommandParams<"get_project_tasks">,
-	userSettings: UserSettings,
+	params: TickTickCommandParams<"get_project_tasks">,
+	userSettings: TickTickUserSettings,
 ): ResultAsync<ProjectData> {
 	if (!(params.projectId || params.projectName)) {
 		return {
@@ -61,13 +62,23 @@ export async function commandGetProjectTasks(
 		// if it's a Unix timestamp, which seems to be the case for items
 		if (data.tasks) {
 			for (const task of data.tasks) {
-				if (task.completedTime && Number.isInteger(task.completedTime)) {
-					task.completedTime = new Date(task.completedTime).toISOString();
+				if (
+					task.completedTime &&
+					Number.isInteger(task.completedTime)
+				) {
+					task.completedTime = new Date(
+						task.completedTime,
+					).toISOString();
 				}
 				if (task.items) {
 					for (const item of task.items) {
-						if (item.completedTime && Number.isInteger(item.completedTime)) {
-							item.completedTime = new Date(item.completedTime).toISOString();
+						if (
+							item.completedTime &&
+							Number.isInteger(item.completedTime)
+						) {
+							item.completedTime = new Date(
+								item.completedTime,
+							).toISOString();
 						}
 					}
 				}

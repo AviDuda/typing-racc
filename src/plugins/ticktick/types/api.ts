@@ -76,12 +76,3 @@ export type ProjectData = {
 	tasks: Task[]; // Undone tasks under project
 	columns: Column[]; // Columns under project
 };
-
-/**
- * User settings configuration
- */
-export type UserSettings = {
-	accessKey: string;
-	allowedProjects?: string;
-	allowProjectModification?: "yes" | "no";
-};

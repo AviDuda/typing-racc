@@ -3,7 +3,7 @@ import type { Project, Task } from "./api";
 /**
  * Plugin parameter types mapping
  */
-export type CommandType = {
+export type TickTickCommandType = {
 	get_projects: { command: "get_projects" };
 	get_project_by_id: {
 		command: "get_project_by_id";
@@ -57,7 +57,13 @@ export type CommandType = {
 	};
 };
 
-/**
- * @template {keyof CommandType} T
+export type TickTickCommandParams<T extends keyof TickTickCommandType> =
+	TickTickCommandType[T]; /**
+ * User settings configuration
  */
-export type CommandParams<T extends keyof CommandType> = CommandType[T];
+
+export type TickTickUserSettings = {
+	accessKey: string;
+	allowedProjects?: string;
+	allowProjectModification?: "yes" | "no";
+};
